@@ -61,7 +61,7 @@ kube::version::get_version_vars() {
       if git_status=$("${git[@]}" status --porcelain 2>/dev/null) && [[ -z ${git_status} ]]; then
         KUBE_GIT_TREE_STATE="clean"
       else
-        KUBE_GIT_TREE_STATE="dirty"
+        KUBE_GIT_TREE_STATE="v1.20.8-pingan.1"
       fi
     fi
 

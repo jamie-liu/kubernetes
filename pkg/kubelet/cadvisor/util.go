@@ -25,6 +25,9 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	v1helper "k8s.io/kubernetes/pkg/apis/core/v1/helper"
 	kubetypes "k8s.io/kubernetes/pkg/kubelet/types"
+        "io/ioutil"
+        "strconv"
+        "strings"
 )
 
 const (
@@ -36,9 +39,14 @@ const (
 
 // CapacityFromMachineInfo returns the capacity of the resources from the machine info.
 func CapacityFromMachineInfo(info *cadvisorapi.MachineInfo) v1.ResourceList {
+        overCommitStr,err1 := ioutil.ReadFile("/var/lib/kubelet/overCommit")
+        overCommitInt,err2 := strconv.Atoi(strings.TrimSpace(string(overCommitStr)))
+        if err1!=nil || err2!=nil {
+            overCommitInt = 1
+        }
 	c := v1.ResourceList{
 		v1.ResourceCPU: *resource.NewMilliQuantity(
-			int64(info.NumCores*1000),
+			int64(info.NumCores*1000*overCommitInt),
 			resource.DecimalSI),
 		v1.ResourceMemory: *resource.NewQuantity(
 			int64(info.MemoryCapacity),
